@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookHaven — Independent Booksellers</title>
+    <meta name="description" content="BookHaven is an independent online bookstore offering hand-picked fiction, science fiction, mystery and technical titles, shipped with care.">
+    <meta name="theme-color" content="#f5f0e6">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f1a15'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' text-anchor='middle' fill='%23f5f0e6'%3EB%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        // Apply saved theme before paint to avoid a flash of the wrong theme
+        document.documentElement.setAttribute("data-theme", localStorage.getItem("siteThemeStylePreference") || "light");
+    </script>
+    <style>
+        /* --- Root Themes (Light Mode Default) --- */
+        :root {
+            --bg-body: #f5f0e6;
+            --bg-card: #fbf8f2;
+            --bg-navbar: rgba(245, 240, 230, 0.88);
+            --bg-hero: #ece4d4;
+            --bg-footer: #1f1a15;
+            --text-main: #2b251f;
+            --text-muted: #6b6258;
+            --text-light: #a39a8e;
+            --text-heading: #1f1a15;
+            --accent: #8c3b2a;
+            --accent-hover: #6f2c1f;
+            --accent-soft: rgba(140, 59, 42, 0.08);
+            --border-color: #ddd3c3;
+            --shadow: rgba(40, 28, 16, 0.08);
+            --bg-cover: #e8dfcf;
+            --success: #3f6b4a;
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-body: 'Hanken Grotesk', 'Helvetica Neue', sans-serif;
+            --radius: 4px;
+        }
+
+        /* --- Dark Mode Variables --- */
+        [data-theme="dark"] {
+            --bg-body: #17140f;
+            --bg-card: #201c16;
+            --bg-navbar: rgba(23, 20, 15, 0.88);
+            --bg-hero: #1d1913;
+            --bg-footer: #100e0a;
+            --text-main: #e6dfd3;
+            --text-muted: #a69d90;
+            --text-light: #7a7166;
+            --text-heading: #f3ede2;
+            --accent: #d98a6c;
+            --accent-hover: #e8a288;
+            --accent-soft: rgba(217, 138, 108, 0.1);
+            --border-color: #342e25;
+            --shadow: rgba(0, 0, 0, 0.35);
+            --bg-cover: #2a251d;
+            --success: #7fb08a;
+        }
+
+        /* --- Global Structural Rules --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; font-size: 16px; -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s; }
+        h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.01em; }
+        button, input, textarea { font-family: inherit; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        svg.icon { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+        /* --- Announcement Bar --- */
+        .announcement { background: var(--bg-footer); color: #e6dfd3; text-align: center; font-size: 13px; padding: 8px 16px; letter-spacing: 0.02em; }
+
+        /* --- Header Navigation --- */
+        .navbar { position: sticky; top: 0; z-index: 1000; background-color: var(--bg-navbar); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); transition: background 0.3s; }
+        .navbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; height: 72px; }
+        .logo { font-family: var(--font-display); font-size: 24px; font-weight: 600; color: var(--text-heading); cursor: pointer; text-decoration: none; letter-spacing: -0.02em; }
+        .logo span { color: var(--accent); font-style: italic; font-weight: 500; }
+        .nav-links { list-style: none; display: flex; gap: 32px; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 15px; cursor: pointer; transition: color 0.2s; position: relative; padding: 4px 0; }
+        .nav-links a::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 100%; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.25s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-heading); }
+        .nav-links a.active::after, .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .search-wrap { position: relative; display: flex; align-items: center; }
+        .search-wrap .icon { position: absolute; left: 12px; color: var(--text-light); width: 16px; height: 16px; pointer-events: none; }
+        .search-bar { padding: 9px 14px 9px 36px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-card); color: var(--text-main); outline: none; font-size: 14px; width: 200px; transition: border-color 0.2s, width 0.3s; }
+        .search-bar::placeholder { color: var(--text-light); }
+        .search-bar:focus { width: 240px; border-color: var(--text-muted); }
+
+        /* Buttons & Interface Anchors */
+        .icon-btn { background: none; border: 1px solid transparent; width: 40px; height: 40px; border-radius: var(--radius); cursor: pointer; color: var(--text-main); display: inline-flex; align-items: center; justify-content: center; transition: background 0.2s, border-color 0.2s; }
+        .icon-btn:hover { background: var(--accent-soft); border-color: var(--border-color); }
+        .cart-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--text-heading); color: var(--bg-body); border: none; padding: 10px 16px; border-radius: var(--radius); cursor: pointer; font-weight: 500; font-size: 14px; transition: background 0.2s; }
+        .cart-btn:hover { background-color: var(--accent); color: #fff; }
+        .cart-count { background: var(--bg-body); color: var(--text-heading); font-size: 12px; font-weight: 600; min-width: 20px; height: 20px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
+        .cart-btn:hover .cart-count { color: var(--accent); }
+        .theme-toggle .moon { display: none; }
+        [data-theme="dark"] .theme-toggle .sun { display: none; }
+        [data-theme="dark"] .theme-toggle .moon { display: block; }
+
+        /* --- Routing Sub-sections Panels --- */
+        .view-section { display: none; }
+        .view-section.active-view { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        /* --- Hero Grid Framework --- */
+        .hero { background: var(--bg-hero); border-bottom: 1px solid var(--border-color); overflow: hidden; }
+        .hero-inner { display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: 48px; min-height: 520px; padding-top: 64px; padding-bottom: 64px; }
+        .eyebrow { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+        .hero-content h1 { font-size: clamp(40px, 5.2vw, 64px); color: var(--text-heading); margin-bottom: 20px; line-height: 1.05; font-weight: 400; }
+        .hero-content h1 em { font-style: italic; color: var(--accent); }
+        .hero-content p { font-size: 18px; color: var(--text-muted); margin-bottom: 32px; max-width: 460px; }
+        .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .cta-btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--accent); color: #fff; text-decoration: none; padding: 14px 26px; border-radius: var(--radius); font-weight: 500; font-size: 15px; cursor: pointer; border: 1px solid var(--accent); transition: background 0.2s, transform 0.2s; }
+        .cta-btn:hover { background-color: var(--accent-hover); border-color: var(--accent-hover); transform: translateY(-1px); }
+        .ghost-btn { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--text-heading); padding: 14px 26px; border-radius: var(--radius); font-weight: 500; font-size: 15px; cursor: pointer; border: 1px solid var(--text-heading); transition: background 0.2s, color 0.2s; }
+        .ghost-btn:hover { background: var(--text-heading); color: var(--bg-body); }
+        .hero-stats { display: flex; gap: 40px; margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--border-color); }
+        .hero-stats strong { display: block; font-family: var(--font-display); font-size: 28px; font-weight: 500; color: var(--text-heading); line-height: 1.1; }
+        .hero-stats span { font-size: 13px; color: var(--text-muted); }
+
+        /* Hero book stack composition */
+        .hero-image { position: relative; height: 420px; }
+        .hero-book { position: absolute; width: 190px; height: 280px; border-radius: 2px 6px 6px 2px; box-shadow: 0 30px 50px -20px rgba(31, 26, 21, 0.45), inset 6px 0 0 rgba(0,0,0,0.12); padding: 26px 22px; display: flex; flex-direction: column; justify-content: space-between; color: #f5f0e6; }
+        .hero-book h4 { font-size: 22px; line-height: 1.15; font-weight: 500; }
+        .hero-book small { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.8; }
+        .hero-book::before { content: ""; position: absolute; left: 22px; right: 22px; top: 50%; height: 1px; background: currentColor; opacity: 0.3; }
+        .hero-book.b1 { left: 4%; top: 70px; transform: rotate(-7deg); background: #3f5b4c; animation: rise 0.8s 0.1s both; }
+        .hero-book.b2 { left: 32%; top: 20px; z-index: 2; background: #8c3b2a; animation: rise 0.8s 0.25s both; }
+        .hero-book.b3 { left: 58%; top: 90px; transform: rotate(6deg); background: #2b3a55; animation: rise 0.8s 0.4s both; }
+        @keyframes rise { from { opacity: 0; translate: 0 30px; } to { opacity: 1; translate: 0 0; } }
+
+        /* --- Benefits Strip --- */
+        .benefits { border-bottom: 1px solid var(--border-color); }
+        .benefits-inner { display: grid; grid-template-columns: repeat(3, 1fr); }
+        .benefit { display: flex; align-items: center; gap: 14px; padding: 24px 0; }
+        .benefit + .benefit { padding-left: 32px; border-left: 1px solid var(--border-color); }
+        .benefit .icon { width: 24px; height: 24px; color: var(--accent); }
+        .benefit strong { display: block; font-size: 14px; font-weight: 600; color: var(--text-heading); }
+        .benefit span { font-size: 13px; color: var(--text-muted); }
+
+        /* --- Global Core Content Wrappers --- */
+        .panel-container { padding: 88px 0; }
+        .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 40px; flex-wrap: wrap; }
+        .section-head.centered { flex-direction: column; align-items: flex-start; }
+        .section-head h2 { font-size: clamp(32px, 3.6vw, 44px); color: var(--text-heading); line-height: 1.1; }
+        .section-head p { color: var(--text-muted); max-width: 520px; margin-top: 10px; }
+
+        /* Category Badges Filter Options */
+        .filter-buttons { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); }
+        .filter-btn { background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); padding: 10px 14px; margin-bottom: -1px; cursor: pointer; font-weight: 500; font-size: 14px; transition: color 0.2s, border-color 0.2s; }
+        .filter-btn:hover { color: var(--text-heading); }
+        .filter-btn.active-filter { color: var(--text-heading); border-bottom-color: var(--accent); }
+
+        /* --- Product Display Grid Structure --- */
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 40px 28px; }
+        .book-card { display: flex; flex-direction: column; }
+        .book-cover { aspect-ratio: 4 / 5; background-color: var(--bg-cover); position: relative; display: flex; justify-content: center; align-items: center; border-radius: var(--radius); margin-bottom: 18px; overflow: hidden; }
+        .cover-art { width: 56%; aspect-ratio: 2 / 3; border-radius: 2px 5px 5px 2px; box-shadow: 0 18px 30px -12px rgba(31, 26, 21, 0.5), inset 5px 0 0 rgba(0,0,0,0.14); display: flex; flex-direction: column; justify-content: space-between; padding: 16px 14px; color: #f5f0e6; font-family: var(--font-display); font-size: 15px; line-height: 1.2; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        .cover-art small { font-family: var(--font-body); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.8; }
+        .book-card:hover .cover-art { transform: translateY(-6px) rotate(-1.5deg); }
+
+        /* Cover Themes */
+        .design-1 { background: #3f5b4c; }
+        .design-2 { background: #b8862f; }
+        .design-3 { background: #2b3a55; }
+        .design-4 { background: #2d2926; }
+        .design-5 { background: #8c3b2a; }
+        .design-6 { background: #4f6d7a; }
+
+        .badge { position: absolute; top: 12px; left: 12px; padding: 4px 9px; border-radius: 2px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border-color); }
+
+        .book-info { text-align: left; display: flex; flex-direction: column; flex-grow: 1; }
+        .book-info h3 { font-size: 19px; color: var(--text-heading); margin-bottom: 2px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .book-info .author { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+        .price-rating { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .price { font-size: 17px; font-weight: 600; color: var(--text-heading); }
+        .rating { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text-muted); }
+        .rating svg { width: 14px; height: 14px; fill: #c08a2e; stroke: none; }
+        .add-to-cart { display: inline-flex; justify-content: center; align-items: center; gap: 8px; background-color: transparent; color: var(--text-heading); border: 1px solid var(--text-heading); padding: 10px 0; border-radius: var(--radius); cursor: pointer; font-weight: 500; font-size: 14px; width: 100%; margin-top: auto; transition: background 0.2s, color 0.2s; }
+        .add-to-cart:hover { background-color: var(--text-heading); color: var(--bg-body); }
+        .add-to-cart.added { background: var(--success); border-color: var(--success); color: #fff; }
+
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 64px 20px; border: 1px dashed var(--border-color); border-radius: var(--radius); color: var(--text-muted); }
+        .empty-state h3 { font-size: 22px; color: var(--text-heading); margin-bottom: 6px; }
+
+        /* --- Authors Grid Module --- */
+        .authors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
+        .author-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 32px; text-align: left; transition: border-color 0.2s, transform 0.3s; }
+        .author-card:hover { border-color: var(--text-muted); transform: translateY(-3px); }
+        .author-avatar { width: 64px; height: 64px; background: var(--bg-cover); color: var(--accent); border-radius: 50%; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; font-family: var(--font-display); font-size: 24px; font-weight: 500; }
+        .author-card h3 { font-size: 22px; color: var(--text-heading); margin-bottom: 4px; }
+        .author-card .role { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 14px; }
+        .author-card p { font-size: 15px; color: var(--text-muted); }
+
+        /* --- Blog Feed Layout Grid --- */
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; }
+        .blog-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); overflow: hidden; text-align: left; display: flex; flex-direction: column; transition: border-color 0.2s; }
+        .blog-card:hover { border-color: var(--text-muted); }
+        .blog-thumbnail { height: 200px; display: flex; align-items: flex-end; padding: 24px; color: #f5f0e6; font-family: var(--font-display); font-size: 56px; font-style: italic; line-height: 1; background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 14px); }
+        .blog-thumbnail.t1 { background-color: #3f5b4c; }
+        .blog-thumbnail.t2 { background-color: #2b3a55; }
+        .blog-body { padding: 28px; display: flex; flex-direction: column; flex-grow: 1; }
+        .blog-meta { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+        .blog-meta b { color: var(--accent); font-weight: 600; }
+        .blog-body h3 { color: var(--text-heading); margin-bottom: 10px; font-size: 24px; line-height: 1.2; }
+        .blog-body p { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; }
+        .read-more { display: inline-flex; align-items: center; gap: 6px; color: var(--text-heading); font-weight: 600; text-decoration: none; font-size: 14px; cursor: pointer; margin-top: auto; }
+        .read-more:hover { color: var(--accent); }
+
+        /* --- Validated Contact Layout --- */
+        .contact-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; align-items: start; }
+        .contact-info { display: flex; flex-direction: column; gap: 28px; }
+        .contact-info-item { display: flex; gap: 16px; }
+        .contact-info-item .icon { width: 22px; height: 22px; color: var(--accent); margin-top: 3px; }
+        .contact-info-item strong { display: block; color: var(--text-heading); font-weight: 600; margin-bottom: 2px; }
+        .contact-info-item span { color: var(--text-muted); font-size: 15px; }
+        .contact-container { background: var(--bg-card); padding: 40px; border-radius: var(--radius); border: 1px solid var(--border-color); text-align: left; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--text-heading); }
+        .form-control { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); border-radius: var(--radius); outline: none; font-size: 15px; transition: border-color 0.2s, box-shadow 0.2s; resize: vertical; }
+        .form-control::placeholder { color: var(--text-light); }
+        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+        .form-control.invalid { border-color: #b3412e; }
+        .error-msg { color: #b3412e; font-size: 13px; margin-top: 6px; display: none; }
+        [data-theme="dark"] .error-msg { color: #e8866f; }
+        .submit-btn { background: var(--accent); color: white; border: none; width: 100%; padding: 14px; border-radius: var(--radius); font-weight: 500; cursor: pointer; font-size: 15px; transition: background 0.2s; }
+        .submit-btn:hover { background: var(--accent-hover); }
+        .form-note { font-size: 13px; color: var(--text-light); margin-top: 14px; text-align: center; }
+
+        /* --- Sliding Cart Drawer Overlay Layout --- */
+        .cart-sidebar-overlay { position: fixed; top: 0; right: 0; width: 420px; max-width: 100%; height: 100vh; background: var(--bg-card); border-left: 1px solid var(--border-color); box-shadow: -20px 0 40px var(--shadow); z-index: 2000; transform: translateX(100%); visibility: hidden; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s; display: flex; flex-direction: column; padding: 28px; }
+        .cart-sidebar-overlay.drawer-open { transform: translateX(0); visibility: visible; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--border-color); }
+        .cart-header h2 { color: var(--text-heading); font-size: 26px; }
+        .cart-items-feed { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; }
+
+        /* Inline Cart Line Product Card Layout */
+        .cart-item-row { display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
+        .cart-thumb { width: 44px; height: 64px; border-radius: 1px 3px 3px 1px; flex-shrink: 0; box-shadow: inset 3px 0 0 rgba(0,0,0,0.14); }
+        .item-details { flex-grow: 1; min-width: 0; }
+        .item-details h4 { font-size: 16px; color: var(--text-heading); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .item-details p { font-size: 13px; color: var(--text-muted); }
+        .item-qty-controls { display: inline-flex; align-items: center; margin-top: 8px; border: 1px solid var(--border-color); border-radius: var(--radius); }
+        .item-qty-controls span { min-width: 28px; text-align: center; font-size: 13px; font-weight: 600; }
+        .qty-adjust { width: 28px; height: 28px; border: none; background: none; color: var(--text-main); cursor: pointer; font-size: 15px; display: flex; justify-content: center; align-items: center; }
+        .qty-adjust:hover { background: var(--accent-soft); }
+        .item-side { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .item-side strong { font-size: 15px; color: var(--text-heading); }
+        .remove-item-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+        .remove-item-btn:hover { color: var(--accent); }
+        .cart-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 15px; }
+        .cart-empty .icon { width: 36px; height: 36px; color: var(--text-light); margin-bottom: 12px; }
+        .cart-empty h4 { font-size: 20px; color: var(--text-heading); margin-bottom: 4px; }
+
+        .cart-footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .total-wrapper { display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; color: var(--text-heading); margin-bottom: 6px; }
+        .cart-footer small { display: block; color: var(--text-muted); font-size: 13px; margin-bottom: 18px; }
+        .checkout-btn { width: 100%; background: var(--text-heading); color: var(--bg-body); border: none; padding: 15px; border-radius: var(--radius); font-weight: 500; font-size: 15px; cursor: pointer; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+        .checkout-btn:hover { background: var(--accent); color: #fff; }
+
+        /* Backdrop Dark Tint Wall */
+        .cart-backdrop { position: fixed; inset: 0; background: rgba(20, 16, 12, 0.45); z-index: 1500; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .cart-backdrop.backdrop-active { opacity: 1; pointer-events: auto; }
+
+        /* --- Toast Notifications --- */
+        .toast { position: fixed; bottom: 28px; left: 50%; transform: translate(-50%, 20px); background: var(--text-heading); color: var(--bg-body); padding: 14px 20px; border-radius: var(--radius); font-size: 14px; font-weight: 500; box-shadow: 0 12px 30px var(--shadow); z-index: 3000; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; display: flex; align-items: center; gap: 10px; max-width: calc(100% - 40px); }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        /* --- Footer Bottom Framework --- */
+        footer { background-color: var(--bg-footer); color: #a39a8e; font-size: 14px; transition: background 0.3s; }
+        .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; padding-top: 64px; padding-bottom: 48px; }
+        .footer-grid .logo { color: #f3ede2; display: inline-block; margin-bottom: 14px; }
+        .footer-grid .logo span { color: #d98a6c; }
+        .footer-grid p { max-width: 300px; }
+        .footer-grid h4 { font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #f3ede2; margin-bottom: 16px; }
+        .footer-grid ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .footer-grid a { color: #a39a8e; text-decoration: none; cursor: pointer; transition: color 0.2s; }
+        .footer-grid a:hover { color: #f3ede2; }
+        .footer-bottom { border-top: 1px solid #2d2721; padding-top: 22px; padding-bottom: 22px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; }
+
+        /* --- Responsive Queries Viewports --- */
+        @media (max-width: 960px) {
+            .nav-links { gap: 20px; }
+            .search-bar, .search-bar:focus { width: 160px; }
+            .hero-inner { grid-template-columns: 1fr; min-height: 0; }
+            .hero-image { height: 340px; max-width: 480px; }
+            .contact-layout { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 720px) {
+            .container { padding: 0 20px; }
+            .navbar-inner { flex-wrap: wrap; height: auto; padding-top: 14px; padding-bottom: 14px; row-gap: 12px; }
+            .navbar nav { order: 3; width: 100%; overflow-x: auto; }
+            .nav-links { gap: 22px; }
+            .search-wrap { display: none; }
+            .hero-inner { padding-top: 48px; padding-bottom: 48px; }
+            .hero-stats { gap: 24px; }
+            .hero-image { height: 300px; }
+            .hero-book { width: 150px; height: 220px; padding: 20px 16px; }
+            .hero-book h4 { font-size: 18px; }
+            .benefits-inner { grid-template-columns: 1fr; }
+            .benefit + .benefit { padding-left: 0; border-left: none; border-top: 1px solid var(--border-color); }
+            .benefit { padding: 16px 0; }
+            .panel-container { padding: 64px 0; }
+            .book-grid { grid-template-columns: repeat(2, 1fr); gap: 32px 16px; }
+            .book-info h3 { font-size: 16px; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .contact-container { padding: 28px 22px; }
+            .cart-sidebar-overlay { width: 100%; }
+            .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SVG icon sprite -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+        <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+        <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+        <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+        <symbol id="i-return" viewBox="0 0 24 24"><path d="M4 9h11a5 5 0 0 1 0 10H8"/><path d="m8 5-4 4 4 4"/></symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+        <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+        <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3 7 9 6 9-6"/></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+        <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></symbol>
+    </svg>
+
+    <div class="announcement">Free standard shipping on orders over $35 &middot; Gift wrapping available at checkout</div>
+
+    <div class="cart-backdrop" id="cartBackdrop" onclick="toggleCartDrawer(false)"></div>
+
+    <header class="navbar">
+        <div class="container navbar-inner">
+            <a class="logo" href="#" onclick="navigateTo('home'); return false;">Book<span>Haven</span></a>
+            <nav aria-label="Main">
+                <ul class="nav-links">
+                    <li><a href="#" id="nav-home" onclick="navigateTo('home'); return false;" class="active">Shop</a></li>
+                    <li><a href="#" id="nav-authors" onclick="navigateTo('authors'); return false;">Authors</a></li>
+                    <li><a href="#" id="nav-blog" onclick="navigateTo('blog'); return false;">Journal</a></li>
+                    <li><a href="#" id="nav-contact" onclick="navigateTo('contact'); return false;">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <label class="search-wrap">
+                    <svg class="icon"><use href="#i-search"/></svg>
+                    <input type="search" id="siteSearch" placeholder="Search titles or authors" class="search-bar" oninput="filterSearch()" aria-label="Search books">
+                </label>
+                <button class="icon-btn theme-toggle" id="themeToggleBtn" onclick="toggleColorTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">
+                    <svg class="icon sun"><use href="#i-sun"/></svg>
+                    <svg class="icon moon"><use href="#i-moon"/></svg>
+                </button>
+                <button class="cart-btn" id="cartCounterBtn" onclick="toggleCartDrawer(true)" aria-label="Open cart">
+                    <svg class="icon"><use href="#i-bag"/></svg>
+                    Cart <span class="cart-count" id="cartCountBadge">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside class="cart-sidebar-overlay" id="cartDrawerPanel" aria-label="Shopping cart">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="icon-btn" onclick="toggleCartDrawer(false)" aria-label="Close cart"><svg class="icon"><use href="#i-close"/></svg></button>
+        </div>
+        <div class="cart-items-feed" id="cartItemsDisplayBox"></div>
+        <div class="cart-footer">
+            <div class="total-wrapper">
+                <span>Subtotal</span>
+                <span id="cartGrandTotalValue">$0.00</span>
+            </div>
+            <small>Shipping and taxes calculated at checkout.</small>
+            <button class="checkout-btn" onclick="checkoutSimulation()"><svg class="icon"><use href="#i-lock"/></svg> Secure Checkout</button>
+        </div>
+    </aside>
+
+    <main id="view-home" class="view-section active-view">
+        <section class="hero">
+            <div class="container hero-inner">
+                <div class="hero-content">
+                    <span class="eyebrow">Independent booksellers since 2014</span>
+                    <h1>Books worth <em>staying up</em> late for.</h1>
+                    <p>A carefully chosen shelf of fiction, science fiction, mystery and technical titles — each one read and recommended by our staff.</p>
+                    <div class="hero-actions">
+                        <button onclick="scrollToStore()" class="cta-btn">Browse the collection <svg class="icon"><use href="#i-arrow"/></svg></button>
+                        <button onclick="navigateTo('authors')" class="ghost-btn">Meet the authors</button>
+                    </div>
+                    <div class="hero-stats">
+                        <div><strong>4,800+</strong><span>Titles in stock</span></div>
+                        <div><strong>4.9 / 5</strong><span>From 2,317 reviews</span></div>
+                        <div><strong>2–4 days</strong><span>Typical delivery</span></div>
+                    </div>
+                </div>
+                <div class="hero-image" aria-hidden="true">
+                    <div class="hero-book b1"><small>Fiction</small><h4>The Great Gatsby</h4></div>
+                    <div class="hero-book b2"><small>Staff pick</small><h4>Eloquent JavaScript</h4></div>
+                    <div class="hero-book b3"><small>Sci-Fi</small><h4>Dune Chronicles</h4></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="benefits">
+            <div class="container benefits-inner">
+                <div class="benefit"><svg class="icon"><use href="#i-truck"/></svg><div><strong>Free shipping over $35</strong><span>Tracked delivery nationwide</span></div></div>
+                <div class="benefit"><svg class="icon"><use href="#i-return"/></svg><div><strong>30-day returns</strong><span>No questions asked</span></div></div>
+                <div class="benefit"><svg class="icon"><use href="#i-lock"/></svg><div><strong>Secure checkout</strong><span>Encrypted payments</span></div></div>
+            </div>
+        </section>
+
+        <section class="panel-container" id="marketplace">
+            <div class="container">
+                <div class="section-head">
+                    <div>
+                        <span class="eyebrow">The shelf</span>
+                        <h2>Our Collection</h2>
+                    </div>
+                    <div class="filter-buttons" role="tablist" aria-label="Filter by category">
+                        <button class="filter-btn active-filter" onclick="filterCategory('all', this)">All</button>
+                        <button class="filter-btn" onclick="filterCategory('fiction', this)">Fiction</button>
+                        <button class="filter-btn" onclick="filterCategory('tech', this)">Technology</button>
+                        <button class="filter-btn" onclick="filterCategory('scifi', this)">Sci-Fi</button>
+                        <button class="filter-btn" onclick="filterCategory('mystery', this)">Mystery</button>
+                    </div>
+                </div>
+                <div class="book-grid" id="bookGridDisplay"></div>
+            </div>
+        </section>
+    </main>
+
+    <main id="view-authors" class="view-section">
+        <section class="panel-container">
+            <div class="container">
+                <div class="section-head centered">
+                    <span class="eyebrow">Featured authors</span>
+                    <h2>The minds behind the pages</h2>
+                    <p>A few of the writers whose work our readers return to again and again.</p>
+                </div>
+                <div class="authors-grid">
+                    <div class="author-card">
+                        <div class="author-avatar">RM</div>
+                        <h3>Robert C. Martin</h3>
+                        <span class="role">Software Engineer</span>
+                        <p>Known to many as "Uncle Bob", Robert has spent decades teaching developers how to write clean, maintainable code and design durable software systems.</p>
+                    </div>
+                    <div class="author-card">
+                        <div class="author-avatar">FF</div>
+                        <h3>F. Scott Fitzgerald</h3>
+                        <span class="role">Novelist</span>
+                        <p>One of the defining American writers of the 20th century, whose fiction captured the glamour and restlessness of the Jazz Age.</p>
+                    </div>
+                    <div class="author-card">
+                        <div class="author-avatar">MH</div>
+                        <h3>Marijn Haverbeke</h3>
+                        <span class="role">Programmer &amp; Author</span>
+                        <p>A prolific open-source developer whose approachable writing has introduced a generation of programmers to JavaScript and the web.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <main id="view-blog" class="view-section">
+        <section class="panel-container">
+            <div class="container">
+                <div class="section-head centered">
+                    <span class="eyebrow">The Journal</span>
+                    <h2>Notes from the shop floor</h2>
+                    <p>Reading guides, recommendations and reviews from the BookHaven team.</p>
+                </div>
+                <div class="blog-grid">
+                    <article class="blog-card">
+                        <div class="blog-thumbnail t1">Reading</div>
+                        <div class="blog-body">
+                            <div class="blog-meta"><b>Reading Habits</b> &middot; March 2026 &middot; 6 min read</div>
+                            <h3>How to Read 50 Books a Year Without Rushing</h3>
+                            <p>Practical, low-pressure routines that help you fit more reading into a busy week — and actually enjoy it.</p>
+                            <a class="read-more" href="#" onclick="showToast('The full article is coming soon.'); return false;">Read article <svg class="icon"><use href="#i-arrow"/></svg></a>
+                        </div>
+                    </article>
+                    <article class="blog-card">
+                        <div class="blog-thumbnail t2">Tech</div>
+                        <div class="blog-body">
+                            <div class="blog-meta"><b>Technology</b> &middot; February 2026 &middot; 9 min read</div>
+                            <h3>The Best Engineering Books of the Year</h3>
+                            <p>Our staff's shortlist of programming and software architecture titles that deliver real-world value.</p>
+                            <a class="read-more" href="#" onclick="showToast('The full article is coming soon.'); return false;">Read article <svg class="icon"><use href="#i-arrow"/></svg></a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <main id="view-contact" class="view-section">
+        <section class="panel-container">
+            <div class="container">
+                <div class="section-head centered">
+                    <span class="eyebrow">Contact</span>
+                    <h2>We'd love to hear from you</h2>
+                    <p>Questions about an order, a special request, or just looking for a recommendation? We reply within one business day.</p>
+                </div>
+                <div class="contact-layout">
+                    <div class="contact-info">
+                        <div class="contact-info-item"><svg class="icon"><use href="#i-pin"/></svg><div><strong>Visit the shop</strong><span>218 Larkspur Lane<br>Portland, OR 97214</span></div></div>
+                        <div class="contact-info-item"><svg class="icon"><use href="#i-mail"/></svg><div><strong>Email us</strong><span>hello@bookhaven.shop</span></div></div>
+                        <div class="contact-info-item"><svg class="icon"><use href="#i-clock"/></svg><div><strong>Opening hours</strong><span>Mon–Sat, 10am – 7pm<br>Sunday, 11am – 5pm</span></div></div>
+                    </div>
+                    <div class="contact-container">
+                        <form id="contactValidationForm" onsubmit="handleFormSubmission(event)" novalidate>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="clientName">Full name</label>
+                                    <input type="text" id="clientName" class="form-control" placeholder="Maya Castellanos" autocomplete="name">
+                                    <div class="error-msg" id="nameError">Please enter your name (at least 3 characters).</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="clientEmail">Email address</label>
+                                    <input type="email" id="clientEmail" class="form-control" placeholder="maya@example.com" autocomplete="email">
+                                    <div class="error-msg" id="emailError">Please enter a valid email address.</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="clientMsg">Message</label>
+                                <textarea id="clientMsg" class="form-control" rows="6" placeholder="How can we help?"></textarea>
+                                <div class="error-msg" id="msgError">Please enter a message of at least 15 characters.</div>
+                            </div>
+                            <button type="submit" class="submit-btn">Send message</button>
+                            <p class="form-note">We never share your details with third parties.</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-grid">
+            <div>
+                <a class="logo" href="#" onclick="navigateTo('home'); return false;">Book<span>Haven</span></a>
+                <p>An independent bookstore dedicated to thoughtful curation and friendly, knowledgeable service.</p>
+            </div>
+            <div>
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="#" onclick="navigateTo('home'); return false;">All books</a></li>
+                    <li><a href="#" onclick="navigateTo('authors'); return false;">Authors</a></li>
+                    <li><a href="#" onclick="navigateTo('blog'); return false;">Journal</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Help</h4>
+                <ul>
+                    <li><a href="#" onclick="navigateTo('contact'); return false;">Contact us</a></li>
+                    <li><a href="#" onclick="navigateTo('contact'); return false;">Shipping &amp; returns</a></li>
+                    <li><a href="#" onclick="navigateTo('contact'); return false;">Gift cards</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Visit</h4>
+                <ul>
+                    <li>218 Larkspur Lane</li>
+                    <li>Portland, OR 97214</li>
+                    <li>hello@bookhaven.shop</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <span>&copy; 2026 BookHaven Booksellers. All rights reserved.</span>
+            <span>Privacy &middot; Terms</span>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        // 1. Catalog Data
+        const BOOKS_DATABASE = [
+            { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", price: 14.99, rating: 4.8, category: "fiction", styleClass: "design-1" },
+            { id: 2, title: "Eloquent JavaScript", author: "Marijn Haverbeke", price: 29.99, rating: 4.9, category: "tech", styleClass: "design-2" },
+            { id: 3, title: "Dune Chronicles", author: "Frank Herbert", price: 18.50, rating: 4.7, category: "scifi", styleClass: "design-3" },
+            { id: 4, title: "Sherlock Holmes", author: "Arthur Conan Doyle", price: 12.00, rating: 4.6, category: "mystery", styleClass: "design-4" },
+            { id: 5, title: "Clean Code Architecture", author: "Robert C. Martin", price: 34.95, rating: 4.9, category: "tech", styleClass: "design-5" },
+            { id: 6, title: "Neuromancer Matrix", author: "William Gibson", price: 15.99, rating: 4.5, category: "scifi", styleClass: "design-6" }
+        ];
+
+        const CATEGORY_LABELS = { fiction: "Fiction", tech: "Technology", scifi: "Sci-Fi", mystery: "Mystery" };
+
+        // 2. State
+        let shoppingCartStateArray = [];
+        let selectedCategoryFilter = 'all';
+
+        // 3. Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            // Restore saved cart
+            if (localStorage.getItem("storedCartStateArray")) {
+                try {
+                    shoppingCartStateArray = JSON.parse(localStorage.getItem("storedCartStateArray"));
+                } catch(e) {
+                    shoppingCartStateArray = [];
+                }
+            }
+
+            renderStorefrontGrid(BOOKS_DATABASE);
+            synchronizeCartInterfaceElements();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") toggleCartDrawer(false);
+        });
+
+        // 4. Theme Controls
+        function toggleColorTheme() {
+            const activeTheme = document.documentElement.getAttribute("data-theme");
+            const newThemeSetting = (activeTheme === "dark") ? "light" : "dark";
+
+            document.documentElement.setAttribute("data-theme", newThemeSetting);
+            localStorage.setItem("siteThemeStylePreference", newThemeSetting);
+        }
+
+        // 5. Toast Notifications
+        let toastTimer;
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerHTML = `<svg class="icon"><use href="#i-check"/></svg><span></span>`;
+            toast.querySelector("span").textContent = message;
+            toast.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+
+        // 6. Grid Renderer
+        function renderStorefrontGrid(booksList) {
+            const container = document.getElementById("bookGridDisplay");
+            container.innerHTML = "";
+
+            if (booksList.length === 0) {
+                container.innerHTML = `<div class="empty-state"><h3>No books found</h3><p>Try a different search term or category.</p></div>`;
+                return;
+            }
+
+            booksList.forEach(book => {
+                const card = document.createElement("article");
+                card.className = "book-card";
+                card.innerHTML = `
+                    <div class="book-cover">
+                        <span class="badge">${CATEGORY_LABELS[book.category]}</span>
+                        <div class="cover-art ${book.styleClass}">
+                            <span>${book.title}</span>
+                            <small>${book.author}</small>
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <h3 title="${book.title}">${book.title}</h3>
+                        <p class="author">${book.author}</p>
+                        <div class="price-rating">
+                            <span class="price">$${book.price.toFixed(2)}</span>
+                            <span class="rating"><svg><use href="#i-star"/></svg> ${book.rating.toFixed(1)}</span>
+                        </div>
+                        <button class="add-to-cart" onclick="addItemToCartState(${book.id}, this)">Add to cart</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 7. View Router
+        function navigateTo(viewId) {
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active-view'));
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+
+            document.getElementById(`view-${viewId}`).classList.add('active-view');
+            const targetTabAnchor = document.getElementById(`nav-${viewId}`);
+            if(targetTabAnchor) targetTabAnchor.classList.add('active');
+
+            // Reset search when navigating
+            const search = document.getElementById('siteSearch');
+            if (search.value) {
+                search.value = "";
+                executeCombinedFilters();
+            }
+            window.scrollTo(0,0);
+        }
+
+        function scrollToStore() {
+            document.getElementById('marketplace').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 8. Cart Controllers
+        function toggleCartDrawer(shouldOpen) {
+            const drawer = document.getElementById("cartDrawerPanel");
+            const backdrop = document.getElementById("cartBackdrop");
+            if (shouldOpen) {
+                drawer.classList.add("drawer-open");
+                backdrop.classList.add("backdrop-active");
+            } else {
+                drawer.classList.remove("drawer-open");
+                backdrop.classList.remove("backdrop-active");
+            }
+        }
+
+        function addItemToCartState(bookId, buttonRef) {
+            const matchingProduct = BOOKS_DATABASE.find(b => b.id === bookId);
+            const explicitCartMatch = shoppingCartStateArray.find(item => item.id === bookId);
+
+            if (explicitCartMatch) {
+                explicitCartMatch.quantity++;
+            } else {
+                shoppingCartStateArray.push({
+                    id: matchingProduct.id,
+                    title: matchingProduct.title,
+                    price: matchingProduct.price,
+                    quantity: 1
+                });
+            }
+            processStateAndSync();
+            showToast(`"${matchingProduct.title}" added to your cart`);
+
+            if (buttonRef) {
+                buttonRef.classList.add("added");
+                buttonRef.textContent = "Added";
+                setTimeout(() => {
+                    buttonRef.classList.remove("added");
+                    buttonRef.textContent = "Add to cart";
+                }, 1400);
+            }
+        }
+
+        function adjustQuantityState(bookId, deltaAmount) {
+            const itemTarget = shoppingCartStateArray.find(item => item.id === bookId);
+            if (!itemTarget) return;
+
+            itemTarget.quantity += deltaAmount;
+            if (itemTarget.quantity <= 0) {
+                shoppingCartStateArray = shoppingCartStateArray.filter(item => item.id !== bookId);
+            }
+            processStateAndSync();
+        }
+
+        function removeCartItemCompletely(bookId) {
+            shoppingCartStateArray = shoppingCartStateArray.filter(item => item.id !== bookId);
+            processStateAndSync();
+        }
+
+        function processStateAndSync() {
+            localStorage.setItem("storedCartStateArray", JSON.stringify(shoppingCartStateArray));
+            synchronizeCartInterfaceElements();
+        }
+
+        function synchronizeCartInterfaceElements() {
+            const feedContainer = document.getElementById("cartItemsDisplayBox");
+            feedContainer.innerHTML = "";
+
+            let incrementalCount = 0;
+            let runningTotalTally = 0;
+
+            shoppingCartStateArray.forEach(item => {
+                incrementalCount += item.quantity;
+                runningTotalTally += (item.price * item.quantity);
+
+                const product = BOOKS_DATABASE.find(b => b.id === item.id);
+                const itemRow = document.createElement("div");
+                itemRow.className = "cart-item-row";
+                itemRow.innerHTML = `
+                    <div class="cart-thumb ${product ? product.styleClass : ''}"></div>
+                    <div class="item-details">
+                        <h4>${item.title}</h4>
+                        <p>$${item.price.toFixed(2)} each</p>
+                        <div class="item-qty-controls">
+                            <button class="qty-adjust" onclick="adjustQuantityState(${item.id}, -1)" aria-label="Decrease quantity">&minus;</button>
+                            <span>${item.quantity}</span>
+                            <button class="qty-adjust" onclick="adjustQuantityState(${item.id}, 1)" aria-label="Increase quantity">+</button>
+                        </div>
+                    </div>
+                    <div class="item-side">
+                        <strong>$${(item.price * item.quantity).toFixed(2)}</strong>
+                        <button class="remove-item-btn" onclick="removeCartItemCompletely(${item.id})">Remove</button>
+                    </div>
+                `;
+                feedContainer.appendChild(itemRow);
+            });
+
+            document.getElementById("cartCountBadge").innerText = incrementalCount;
+            document.getElementById("cartGrandTotalValue").innerText = `$${runningTotalTally.toFixed(2)}`;
+
+            if (shoppingCartStateArray.length === 0) {
+                feedContainer.innerHTML = `<div class="cart-empty"><svg class="icon"><use href="#i-bag"/></svg><h4>Your cart is empty</h4><p>Browse the collection to find your next read.</p></div>`;
+            }
+        }
+
+        function checkoutSimulation() {
+            if (shoppingCartStateArray.length === 0) {
+                showToast("Your cart is empty — add a book to continue.");
+                return;
+            }
+            shoppingCartStateArray = [];
+            processStateAndSync();
+            toggleCartDrawer(false);
+            showToast("Thank you! Your order has been placed.");
+        }
+
+        // 9. Filtering
+        function filterCategory(categoryName, elementRef) {
+            selectedCategoryFilter = categoryName;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
+            elementRef.classList.add('active-filter');
+            executeCombinedFilters();
+        }
+
+        function filterSearch() {
+            // Searching from another view jumps back to the shop
+            if (!document.getElementById('view-home').classList.contains('active-view')) {
+                document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active-view'));
+                document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+                document.getElementById('view-home').classList.add('active-view');
+                document.getElementById('nav-home').classList.add('active');
+            }
+            executeCombinedFilters();
+        }
+
+        function executeCombinedFilters() {
+            const searchInputString = document.getElementById("siteSearch").value.toLowerCase().trim();
+
+            const processedSelectionOutput = BOOKS_DATABASE.filter(book => {
+                const satisfiesCategory = (selectedCategoryFilter === 'all' || book.category === selectedCategoryFilter);
+                const satisfiesSearchQuery = book.title.toLowerCase().includes(searchInputString) || book.author.toLowerCase().includes(searchInputString);
+                return satisfiesCategory && satisfiesSearchQuery;
+            });
+
+            renderStorefrontGrid(processedSelectionOutput);
+        }
+
+        // 10. Contact Form Validation
+        function setFieldError(inputId, errorId, hasError) {
+            document.getElementById(errorId).style.display = hasError ? "block" : "none";
+            document.getElementById(inputId).classList.toggle("invalid", hasError);
+        }
+
+        function handleFormSubmission(event) {
+            event.preventDefault();
+
+            const nameVal = document.getElementById("clientName").value.trim();
+            const emailVal = document.getElementById("clientEmail").value.trim();
+            const msgVal = document.getElementById("clientMsg").value.trim();
+
+            const nameInvalid = nameVal.length < 3;
+            const emailInvalid = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+            const msgInvalid = msgVal.length < 15;
+
+            setFieldError("clientName", "nameError", nameInvalid);
+            setFieldError("clientEmail", "emailError", emailInvalid);
+            setFieldError("clientMsg", "msgError", msgInvalid);
+
+            if (!nameInvalid && !emailInvalid && !msgInvalid) {
+                showToast(`Thanks, ${nameVal} — we'll be in touch within one business day.`);
+                document.getElementById("contactValidationForm").reset();
+            }
+        }
+    </script>
+<script async src="/.netlify/scripts/ar" data-netlify-deploy-id="6abb730546062f2109dfd769" data-netlify-site-id="9f5c12f0-671c-4e11-912e-e59e746a701e" data-agent-runner-id="6abb6fe313aba083bb7326a5"></script>
+</body>
+</html>
+<script async src="/.netlify/scripts/hud?variant=owner-private" data-nf-variant="owner-private" data-netlify-site-id="9f5c12f0-671c-4e11-912e-e59e746a701e" data-app-host="app.netlify.com"></script>
